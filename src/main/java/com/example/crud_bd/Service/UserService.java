@@ -20,7 +20,7 @@ public class UserService {
     }
 
     public User getUserById(Integer id) {
-        if(id == null){
+        if (id == null) {
             throw new RuntimeException("User not found");
         }
         return userRepository.getUserById(id);
@@ -36,28 +36,23 @@ public class UserService {
 
 
     public User createUser(User user) {
-        if(user == null){
+        if (user == null) {
             throw new RuntimeException("User not found");
         }
         return Optional.of(userRepository.save(user)).orElseThrow(RuntimeException::new);
     }
 
-    public void deleteUserById(Long id) {
-        if(id == null)
+    public Integer deleteUserById(Long id) {
+        if (id == null)
             throw new RuntimeException("User not found");
-        userRepository.deleteUserById(id);
+        return userRepository.deleteUserById(id);
     }
 
-    //FIXME НЕ НАХОДИТ ПО ПАСПОРТУ
-    public void deleteUserByPassport(String passport) {
-        if(passport == null) {
+
+    public Integer deleteUserByPassport(String passport) {
+        if (passport == null) {
             throw new RuntimeException("Passport not found");
         }
-        String d = passport.trim();
-        int i = userRepository.deleteUserByPassport(d);
-        log.atInfo().log("Deleting user by {} and {}", d,i);
-        User user = userRepository.getUserByPassport(d);
-        log.atInfo().log("Find user {}",user.toString());
+        return userRepository.deleteUserByPassport(passport);
     }
-
 }

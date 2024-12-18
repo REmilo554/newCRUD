@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,22 +53,23 @@ public class UserController {
         }
         return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
     }
-
+    //http://localhost:8080/users/
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Integer> deleteUser(@PathVariable Long id) {
         if(id == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        userService.deleteUserById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        Integer i = userService.deleteUserById(id);
+        return new ResponseEntity<>(i, HttpStatus.OK);
     }
 
-    @DeleteMapping("/")
-    public ResponseEntity<Void> deleteUserByPassport(@RequestBody String passport) {
+    //http://localhost:8080/users/delete
+    @DeleteMapping("/delete")
+    public ResponseEntity<Integer> deleteUserByPassport(@RequestHeader String passport) {
         if(passport == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        userService.deleteUserByPassport(passport);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        Integer i = userService.deleteUserByPassport(passport);
+        return new ResponseEntity<>(i, HttpStatus.OK);
     }
 }

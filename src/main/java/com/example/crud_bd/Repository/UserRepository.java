@@ -31,10 +31,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Modifying
     @Transactional
     @Query("delete from User u where u.id=?1")
-    void deleteUserById(Long id);
+    Integer deleteUserById(Long id);
 
     @Modifying
     @Transactional
     @Query("delete from User u where u.passport=?1")
-    int deleteUserByPassport(String passport);
+    Integer deleteUserByPassport(String passport);
 }
