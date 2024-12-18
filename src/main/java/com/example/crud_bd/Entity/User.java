@@ -27,7 +27,7 @@ public class User {
     @Column(name = "second_name", nullable = false)
     private String secondName;
     @Column(name = "age", nullable = false)
-    private int age;
+    private Integer age;
     @Column(name = "passport" , nullable = false)
     private String passport;
 }
