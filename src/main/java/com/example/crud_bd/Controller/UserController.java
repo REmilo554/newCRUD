@@ -1,10 +1,8 @@
 package com.example.crud_bd.Controller;
 
+import com.example.crud_bd.AspectLogger.Loggable;
 import com.example.crud_bd.Entity.User;
 import com.example.crud_bd.Service.UserService;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +51,10 @@ public class UserController {
         }
         return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
     }
+
+
     //http://localhost:8080/users/
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Integer> deleteUser(@PathVariable Long id) {
         if(id == null){
@@ -72,4 +73,6 @@ public class UserController {
         Integer i = userService.deleteUserByPassport(passport);
         return new ResponseEntity<>(i, HttpStatus.OK);
     }
+
+
 }
