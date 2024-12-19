@@ -16,6 +16,8 @@ import java.util.Optional;
 
 import static com.example.crud_bd.Validate.Validate.validateUserMap;
 
+//TODO добавить к методам проверки,что user.age > 14
+
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -23,6 +25,11 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    /**
+     * запрос одиночных пользователей надо оборачивать в optional
+     * т.к бд либо вернет пользователя
+     * либо вернет null
+     */
     public User getUserById(Long id) {
         if (id == null) {
             throw new UserNotFoundException("Id cannot be empty", HttpStatus.BAD_REQUEST);
@@ -31,14 +38,25 @@ public class UserService {
         return userOptional.orElseThrow(() -> new UserNotFoundException("User not found", HttpStatus.NOT_FOUND));
     }
 
+    /**
+     * запросы возвращающие листы не надо оборачивать
+     * т.к. в любом случае возвращается лист
+     * либо нормальный, либо empty
+     */
     public List<User> getAllUsers() {
-        return Optional.ofNullable(userRepository.findAll())
-                .orElseThrow(() -> new UserNotFoundException("Users not found", HttpStatus.NOT_FOUND));
+        List<User> usersList = userRepository.findAll();
+        if(usersList.isEmpty()){
+            throw new UserNotFoundException("Users not found", HttpStatus.NOT_FOUND);
+        }
+        return usersList;
     }
 
-    public List<User> getAllAdultUser() {
-        return Optional.ofNullable(userRepository.findAllAdultUsers())
-                .orElseThrow(() -> new UserNotFoundException("Users not found", HttpStatus.NOT_FOUND));
+    public List<User> getAllAdultUsers() {
+        List<User> usersList = userRepository.findAllAdultUsers();
+        if(usersList.isEmpty()){
+            throw new UserNotFoundException("Users not found", HttpStatus.NOT_FOUND);
+        }
+        return usersList;
     }
 
     @Loggable(message = "Create user")

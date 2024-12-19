@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -71,15 +73,30 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testGetAllUsers_shouldReturnUsersListWhenNull() {
-        when(userRepository.findAll()).thenReturn(null);
+    public void testGetAllUsers_shouldReturnThrowWhenListEmpty() {
+        when(userRepository.findAll()).thenReturn(new ArrayList<>());
 
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.getAllUsers());
         assertEquals(USERSNOTFOUND, exception.getMessage());
     }
 
+    @Test
+    public void testGetAllAdultUsers_shouldReturnNoAdultUsersList(){
+        User adultUser = users.get(0);
+        adultUser.setAge(14);
+        users.add(adultUser);
+        users.remove(0);
 
+        when(userRepository.findAll()).thenReturn(users);
+        assertFalse(userService.getAllUsers().get(0).getAge() >= 18);
+    }
 
+    @Test
+    public void testGetAllAdultUsers_shouldReturnAdultUsersList(){
+
+        when(userRepository.findAll()).thenReturn(users);
+        assertTrue(userService.getAllUsers().get(0).getAge() >= 18);
+    }
 
     public User getUser() {
         return User.builder()
