@@ -1,12 +1,13 @@
 package com.example.crud_bd.Validate;
 
 import com.example.crud_bd.Entity.User;
+import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
 //TODO сделать проверки элегантней или сделать стратегию
 public class Validate {
-    public static User validateUser(User user, Map<String, Object> maps) {
+    public static User validateUserMap(User user, Map<String, Object> maps) {
         removeNulls(maps);
         if (maps.containsKey("firstName")) {
             Object firstName = maps.get("firstName");
@@ -34,6 +35,7 @@ public class Validate {
         }
         return user;
     }
+
 
     private static void removeNulls(Map<String, Object> maps) {
         maps.keySet().removeIf(key -> checkNull(maps.get(key)));

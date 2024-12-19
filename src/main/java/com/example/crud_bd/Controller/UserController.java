@@ -1,17 +1,21 @@
 package com.example.crud_bd.Controller;
 
 import com.example.crud_bd.AspectLogger.Loggable;
+import com.example.crud_bd.DTO.PassportDTO;
 import com.example.crud_bd.Entity.User;
+import com.example.crud_bd.Exceptions.UserNotFoundException;
 import com.example.crud_bd.Repository.UserRepository;
 import com.example.crud_bd.Service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,8 +39,15 @@ public class UserController {
 
     private final UserService userService;
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<?> handleUserNotFoundException(UserNotFoundException ex) {
+        return ResponseEntity.status(ex.getStatus())
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(ex.getMessage());
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
+    public ResponseEntity<User> getUser(@Validated @PathVariable Long id) {
         return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
     }
 
@@ -60,22 +71,20 @@ public class UserController {
 
     //http://localhost:8080/users/
     @DeleteMapping("/{id}")
-    public ResponseEntity<Integer> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<User> deleteUser(@PathVariable Long id) {
         if (id == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        Integer i = userService.deleteUserById(id);
-        return new ResponseEntity<>(i, HttpStatus.OK);
+        User user = userService.deleteUserById(id);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     //http://localhost:8080/users/delete
     @DeleteMapping("/delete")
-    public ResponseEntity<Integer> deleteUserByPassport(@Valid @RequestHeader String passport) {
-        if (passport == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        Integer i = userService.deleteUserByPassport(passport);
-        return new ResponseEntity<>(i, HttpStatus.OK);
+    public ResponseEntity<User> deleteUserByPassport(@RequestHeader("passport") String passport, @Validated PassportDTO passportDTO) {
+        passportDTO.setPassport(passport);
+        User user = userService.deleteUserByPassport(passportDTO.getPassport());
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     /**

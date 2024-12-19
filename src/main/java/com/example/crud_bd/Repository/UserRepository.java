@@ -9,11 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
 
+    @Query("select u from User u where u.passport = ?1")
     User getUserByPassport(String passport);
 
     @Query("SELECT u FROM User u WHERE u.id = ?1")
@@ -32,12 +32,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Modifying
     @Transactional
     @Query("delete from User u where u.id=?1")
-    Integer deleteUserById(Long id);
+    void deleteUserById(Long id);
 
     @Modifying
     @Transactional
     @Query("delete from User u where u.passport=?1")
-    Integer deleteUserByPassport(String passport);
+    void deleteUserByPassport(String passport);
 
     @Query("update User u set u.firstName=?2,u.secondName=?3,u.age=?4,u.passport=?5 where u.id=?1")
     @Modifying
