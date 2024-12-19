@@ -7,9 +7,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 
 @Entity
@@ -22,12 +27,18 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
+    @NotBlank
     @Column(name = "first_name", nullable = false)
     private String firstName;
+    @NotBlank
     @Column(name = "second_name", nullable = false)
     private String secondName;
+    @Min(14)
+    @Max(100)
     @Column(name = "age", nullable = false)
     private Integer age;
+    @Length(min = 11,max = 11)
+    @NotBlank
     @Column(name = "passport" , nullable = false)
     private String passport;
 }

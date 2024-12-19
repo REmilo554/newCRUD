@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
@@ -16,7 +17,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     User getUserByPassport(String passport);
 
     @Query("SELECT u FROM User u WHERE u.id = ?1")
-    User getUserById(int id);
+    User getUserById(Long id);
 
     List<User> findAll();
 
@@ -43,5 +44,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Transactional
     void updateUser(Long id, String firstName, String secondName, Integer age, String passport);
 
-
+    @Modifying
+    @Transactional
+    @Query("update User u set u.firstName=:firstName,u.secondName=:secondName,u.age=:age,u.passport=:passport where u.id=:id")
+   // @Query("update User u set u.firstName=?2,u.secondName=?3,u.age=?4,u.passport=?5 where u.id=?1")
+    void updateUserById(Long id,String firstName, String secondName, Integer age, String passport);
 }
