@@ -1,7 +1,6 @@
 package com.example.crud_bd.Validate;
 
 import com.example.crud_bd.Entity.User;
-import org.springframework.util.StringUtils;
 
 import java.util.Map;
 

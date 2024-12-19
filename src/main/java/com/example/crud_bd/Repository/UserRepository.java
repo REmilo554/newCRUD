@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.util.List;
 
 @Repository
@@ -47,6 +46,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Modifying
     @Transactional
     @Query("update User u set u.firstName=:firstName,u.secondName=:secondName,u.age=:age,u.passport=:passport where u.id=:id")
-   // @Query("update User u set u.firstName=?2,u.secondName=?3,u.age=?4,u.passport=?5 where u.id=?1")
-    void updateUserById(Long id,String firstName, String secondName, Integer age, String passport);
+        // @Query("update User u set u.firstName=?2,u.secondName=?3,u.age=?4,u.passport=?5 where u.id=?1")
+    void updateUserById(Long id, String firstName, String secondName, Integer age, String passport);
 }

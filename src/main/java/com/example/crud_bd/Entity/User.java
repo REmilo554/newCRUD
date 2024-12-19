@@ -7,16 +7,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
-
+@Builder
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
@@ -37,7 +37,7 @@ public class User {
     @Max(100)
     @Column(name = "age", nullable = false)
     private Integer age;
-    @Length(min = 11,max = 11)
+    @Length(min = 11, max = 11)
     @NotBlank
     @Column(name = "passport" , nullable = false)
     private String passport;
