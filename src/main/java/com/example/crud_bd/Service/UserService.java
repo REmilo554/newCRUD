@@ -84,15 +84,15 @@ public class UserService {
     }
 
     @Loggable(message = "Deleting user")
-    public User deleteUserByPassport(String passport) {
+    public HttpStatus deleteUserByPassport(String passport) {
         if (passport == null) {
             throw new UserNotFoundException("Passport cannot be null", HttpStatus.NOT_FOUND);
         }
-        Optional<User> userOptional = Optional.ofNullable(userRepository.getUserByPassport(passport));
-        if (userOptional.isPresent()) {
-            userRepository.deleteUserByPassport(passport);
+        Integer countOfDelete = userRepository.deleteUserByPassport(passport);
+        if(countOfDelete == 0){
+            throw new UserNotFoundException("User not found", HttpStatus.NOT_FOUND);
         }
-        return userOptional.orElseThrow(() -> new UserNotFoundException("User not found", HttpStatus.NOT_FOUND));
+        return HttpStatus.OK;
     }
 
     @Loggable(message = "Update user")

@@ -76,10 +76,9 @@ public class UserController {
 
     //http://localhost:8080/users/delete
     @DeleteMapping("/delete")
-    public ResponseEntity<User> deleteUserByPassport(@RequestHeader("passport") String passport, @Validated PassportDTO passportDTO) {
+    public ResponseEntity<Void> deleteUserByPassport(@RequestHeader("passport") String passport, @Validated PassportDTO passportDTO) {
         passportDTO.setPassport(passport);
-        User user = userService.deleteUserByPassport(passportDTO.getPassport());
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return new ResponseEntity<>(userService.deleteUserByPassport(passport));
     }
 
     /**

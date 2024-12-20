@@ -36,7 +36,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Modifying
     @Transactional
     @Query("delete from User u where u.passport=?1")
-    void deleteUserByPassport(String passport);
+    Integer deleteUserByPassport(String passport);
 
     @Query("update User u set u.firstName=?2,u.secondName=?3,u.age=?4,u.passport=?5 where u.id=?1")
     @Modifying

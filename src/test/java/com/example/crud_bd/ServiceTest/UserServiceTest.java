@@ -146,6 +146,17 @@ public class UserServiceTest {
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 
+    @Test
+    public void testDeleteUserByPassport_shouldDeleteUserByPassport() {
+        when(userRepository.deleteUserByPassport("4321-543552")).thenReturn(1);
+        assertEquals(HttpStatus.OK, userService.deleteUserByPassport("4321-543552"));
+    }
+
+    @Test
+    public void testDeleteUserByPassport_shouldThrowWhenUserNotFound() {
+
+    }
+
     public User getUser() {
         return User.builder()
                 .id(1L)
