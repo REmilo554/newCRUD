@@ -25,7 +25,7 @@ public class UserServiceTest {
     private final String USERNOTFOUND = "User not found";
     private final String USERSNOTFOUND = "Users not found";
     private final String IDCANNOTBEEMPTY = "Id cannot be empty";
-
+    private final String USERCANNOTBEEMPTY = "User cannot be empty";
 
     @Mock
     private UserRepository userRepository;
@@ -96,6 +96,26 @@ public class UserServiceTest {
 
         when(userRepository.findAll()).thenReturn(users);
         assertTrue(userService.getAllUsers().get(0).getAge() >= 18);
+    }
+
+    @Test
+    public void testCreateUser_shouldCreateUser() {
+        when(userRepository.save(user)).thenReturn(user);
+        User result = userService.createUser(user);
+        assertEquals(user, result);
+    }
+
+    @Test
+    public void testCreateUser_shouldThrowWhenUserNull(){
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.createUser(null));
+        assertEquals(USERCANNOTBEEMPTY, exception.getMessage());
+    }
+
+    @Test
+    public void testCreateUser_shouldThrowWhenUserAlreadyExists(){
+        when(userRepository.save(user)).thenReturn(null);
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.createUser(user));
+        assertEquals(USERNOTFOUND, exception.getMessage());
     }
 
     public User getUser() {

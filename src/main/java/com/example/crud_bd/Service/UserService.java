@@ -59,12 +59,15 @@ public class UserService {
         return usersList;
     }
 
+    /**
+     *обернул в ofNullable т.к вылетает NPE если из репозитория возвращается null
+     */
     @Loggable(message = "Create user")
     public User createUser(User user) {
         if (user == null) {
             throw new UserNotFoundException("User cannot be empty", HttpStatus.BAD_REQUEST);
         }
-        return Optional.of(userRepository.save(user))
+        return Optional.ofNullable(userRepository.save(user))
                 .orElseThrow(() -> new UserNotFoundException("User not found", HttpStatus.BAD_REQUEST));
     }
 
