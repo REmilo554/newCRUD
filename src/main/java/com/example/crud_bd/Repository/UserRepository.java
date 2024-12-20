@@ -31,7 +31,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Modifying
     @Transactional
     @Query("delete from User u where u.id=?1")
-    void deleteUserById(Long id);
+    Integer deleteUserById(Long id);
 
     @Modifying
     @Transactional

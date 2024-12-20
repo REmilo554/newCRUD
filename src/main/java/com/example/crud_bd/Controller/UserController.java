@@ -67,12 +67,11 @@ public class UserController {
 
     //http://localhost:8080/users/
     @DeleteMapping("/{id}")
-    public ResponseEntity<User> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         if (id == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        User user = userService.deleteUserById(id);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return new ResponseEntity<>(userService.deleteUserById(id));
     }
 
     //http://localhost:8080/users/delete

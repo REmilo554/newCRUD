@@ -72,15 +72,15 @@ public class UserService {
     }
 
     @Loggable(message = "Deleting user")
-    public User deleteUserById(Long id) {
+    public HttpStatus deleteUserById(Long id) {
         if (id == null) {
             throw new UserNotFoundException("Id cannot be empty", HttpStatus.NOT_FOUND);
         }
-        Optional<User> userOptional = Optional.ofNullable(userRepository.getUserById(id));
-        if (userOptional.isPresent()) {
-            userRepository.deleteUserById(id);
+        Integer countOfDelete = userRepository.deleteUserById(id);
+        if(countOfDelete == 0){
+            throw new UserNotFoundException("User not found", HttpStatus.NOT_FOUND);
         }
-        return userOptional.orElseThrow(() -> new UserNotFoundException("User not found", HttpStatus.NOT_FOUND));
+        return HttpStatus.OK;
     }
 
     @Loggable(message = "Deleting user")

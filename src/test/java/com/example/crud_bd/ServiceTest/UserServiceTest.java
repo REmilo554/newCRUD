@@ -5,11 +5,13 @@ import com.example.crud_bd.Exceptions.UserNotFoundException;
 import com.example.crud_bd.Repository.UserRepository;
 import com.example.crud_bd.Service.UserService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -88,13 +91,14 @@ public class UserServiceTest {
         users.remove(0);
 
         when(userRepository.findAll()).thenReturn(users);
+
         assertFalse(userService.getAllUsers().get(0).getAge() >= 18);
     }
 
     @Test
     public void testGetAllAdultUsers_shouldReturnAdultUsersList(){
-
         when(userRepository.findAll()).thenReturn(users);
+
         assertTrue(userService.getAllUsers().get(0).getAge() >= 18);
     }
 
@@ -102,6 +106,7 @@ public class UserServiceTest {
     public void testCreateUser_shouldCreateUser() {
         when(userRepository.save(user)).thenReturn(user);
         User result = userService.createUser(user);
+
         assertEquals(user, result);
     }
 
@@ -114,8 +119,31 @@ public class UserServiceTest {
     @Test
     public void testCreateUser_shouldThrowWhenUserAlreadyExists(){
         when(userRepository.save(user)).thenReturn(null);
+
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.createUser(user));
         assertEquals(USERNOTFOUND, exception.getMessage());
+    }
+
+    @DisplayName("проверяет удаление")
+    @Test
+    public void testDeleteUserById_shouldDeleteUser() {
+       when(userRepository.deleteUserById(1L)).thenReturn(1);
+       assertEquals(HttpStatus.OK, userService.deleteUserById(1L));
+    }
+
+    @Test
+    public void testDeleteUserById_shouldThrowWhenIdEmpty() {
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.deleteUserById(null));
+        assertEquals(IDCANNOTBEEMPTY, exception.getMessage());
+    }
+
+    @Test
+    public void testDeleteUserById_ShouldThrowWhenUserNotFound() {
+        when(userRepository.deleteUserById(1L)).thenReturn(0);
+
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.deleteUserById(1L));
+        assertEquals(USERNOTFOUND, exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 
     public User getUser() {
