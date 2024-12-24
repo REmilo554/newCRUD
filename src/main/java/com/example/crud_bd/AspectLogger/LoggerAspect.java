@@ -13,7 +13,7 @@ import java.util.Arrays;
 @Aspect
 @Component
 public class LoggerAspect {
-    private static final Logger log =  LoggerFactory.getLogger(LoggerAspect.class);
+    private static final Logger log = LoggerFactory.getLogger(LoggerAspect.class);
 
     @Around("@annotation(loggable)")
     public Object logMethod(ProceedingJoinPoint joinPoint, Loggable loggable) throws Throwable {

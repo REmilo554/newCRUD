@@ -3,6 +3,7 @@ package com.example.crud_bd.Service;
 import com.example.crud_bd.AspectLogger.Loggable;
 import com.example.crud_bd.Entity.User;
 import com.example.crud_bd.Exceptions.UserNotFoundException;
+import com.example.crud_bd.Kafka.KafkaProducerService;
 import com.example.crud_bd.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,8 @@ import static com.example.crud_bd.Validate.Validate.validateUserMap;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserService {
 
+    private final KafkaProducerService kafkaProducerService;
+
     private final UserRepository userRepository;
 
     /**
@@ -35,6 +38,7 @@ public class UserService {
             throw new UserNotFoundException("Id cannot be empty", HttpStatus.BAD_REQUEST);
         }
         Optional<User> userOptional = Optional.ofNullable(userRepository.getUserById(id));
+        userOptional.ifPresent(user -> kafkaProducerService.sendMessage("User found", user));
         return userOptional.orElseThrow(() -> new UserNotFoundException("User not found", HttpStatus.NOT_FOUND));
     }
 
@@ -45,7 +49,7 @@ public class UserService {
      */
     public List<User> getAllUsers() {
         List<User> usersList = userRepository.findAll();
-        if(usersList.isEmpty()){
+        if (usersList.isEmpty()) {
             throw new UserNotFoundException("Users not found", HttpStatus.NOT_FOUND);
         }
         return usersList;
@@ -53,14 +57,14 @@ public class UserService {
 
     public List<User> getAllAdultUsers() {
         List<User> usersList = userRepository.findAllAdultUsers();
-        if(usersList.isEmpty()){
+        if (usersList.isEmpty()) {
             throw new UserNotFoundException("Users not found", HttpStatus.NOT_FOUND);
         }
         return usersList;
     }
 
     /**
-     *обернул в ofNullable т.к вылетает NPE если из репозитория возвращается null
+     * обернул в ofNullable т.к вылетает NPE если из репозитория возвращается null
      */
     @Loggable(message = "Create user")
     public User createUser(User user) {
@@ -77,7 +81,7 @@ public class UserService {
             throw new UserNotFoundException("Id cannot be empty", HttpStatus.NOT_FOUND);
         }
         Integer countOfDelete = userRepository.deleteUserById(id);
-        if(countOfDelete == 0){
+        if (countOfDelete == 0) {
             throw new UserNotFoundException("User not found", HttpStatus.NOT_FOUND);
         }
         return HttpStatus.OK;
@@ -89,7 +93,7 @@ public class UserService {
             throw new UserNotFoundException("Passport cannot be null", HttpStatus.NOT_FOUND);
         }
         Integer countOfDelete = userRepository.deleteUserByPassport(passport);
-        if(countOfDelete == 0){
+        if (countOfDelete == 0) {
             throw new UserNotFoundException("User not found", HttpStatus.NOT_FOUND);
         }
         return HttpStatus.OK;

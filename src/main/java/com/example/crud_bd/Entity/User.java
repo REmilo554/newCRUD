@@ -39,6 +39,6 @@ public class User {
     private Integer age;
     @Length(min = 11, max = 11)
     @NotBlank
-    @Column(name = "passport" , nullable = false)
+    @Column(name = "passport", nullable = false)
     private String passport;
 }

@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -84,7 +83,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testGetAllAdultUsers_shouldReturnNoAdultUsersList(){
+    public void testGetAllAdultUsers_shouldReturnNoAdultUsersList() {
         User adultUser = users.get(0);
         adultUser.setAge(14);
         users.add(adultUser);
@@ -96,7 +95,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testGetAllAdultUsers_shouldReturnAdultUsersList(){
+    public void testGetAllAdultUsers_shouldReturnAdultUsersList() {
         when(userRepository.findAll()).thenReturn(users);
 
         assertTrue(userService.getAllUsers().get(0).getAge() >= 18);
@@ -111,13 +110,13 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testCreateUser_shouldThrowWhenUserNull(){
+    public void testCreateUser_shouldThrowWhenUserNull() {
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.createUser(null));
         assertEquals(USERCANNOTBEEMPTY, exception.getMessage());
     }
 
     @Test
-    public void testCreateUser_shouldThrowWhenUserAlreadyExists(){
+    public void testCreateUser_shouldThrowWhenUserAlreadyExists() {
         when(userRepository.save(user)).thenReturn(null);
 
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.createUser(user));
@@ -127,8 +126,8 @@ public class UserServiceTest {
     @DisplayName("проверяет удаление")
     @Test
     public void testDeleteUserById_shouldDeleteUser() {
-       when(userRepository.deleteUserById(1L)).thenReturn(1);
-       assertEquals(HttpStatus.OK, userService.deleteUserById(1L));
+        when(userRepository.deleteUserById(1L)).thenReturn(1);
+        assertEquals(HttpStatus.OK, userService.deleteUserById(1L));
     }
 
     @Test

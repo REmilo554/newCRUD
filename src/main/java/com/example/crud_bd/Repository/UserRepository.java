@@ -23,9 +23,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("select u from User u where u.age > 18")
     List<User> findAllAdultUsers();
 
-    @Query("select count(*) from User u where u.passport = ?1")
-    Integer contains(String passport);
-
     User save(User user);
 
     @Modifying
