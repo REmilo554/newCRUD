@@ -5,6 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+
+/**
+ * если нужно более тонко настроить кафку, то надо делать KafkaConfig и плясать с ним
+ */
 @Component
 public class KafkaProducerService {
     private final String TOPIC = "NewTopic";

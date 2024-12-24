@@ -38,11 +38,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("update User u set u.firstName=?2,u.secondName=?3,u.age=?4,u.passport=?5 where u.id=?1")
     @Modifying
     @Transactional
-    void updateUser(Long id, String firstName, String secondName, Integer age, String passport);
+    Integer updateUser(Long id, String firstName, String secondName, Integer age, String passport);
 
     @Modifying
     @Transactional
     @Query("update User u set u.firstName=:firstName,u.secondName=:secondName,u.age=:age,u.passport=:passport where u.id=:id")
         // @Query("update User u set u.firstName=?2,u.secondName=?3,u.age=?4,u.passport=?5 where u.id=?1")
-    void updateUserById(Long id, String firstName, String secondName, Integer age, String passport);
+    Integer updateUserById(Long id, String firstName, String secondName, Integer age, String passport);
 }

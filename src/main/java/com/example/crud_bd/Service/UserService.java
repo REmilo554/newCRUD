@@ -38,8 +38,10 @@ public class UserService {
             throw new UserNotFoundException("Id cannot be empty", HttpStatus.BAD_REQUEST);
         }
         Optional<User> userOptional = Optional.ofNullable(userRepository.getUserById(id));
-        userOptional.ifPresent(user -> kafkaProducerService.sendMessage("User found", user));
-        return userOptional.orElseThrow(() -> new UserNotFoundException("User not found", HttpStatus.NOT_FOUND));
+        userOptional
+                .ifPresent(user -> kafkaProducerService.sendMessage("User found", user));
+        return userOptional
+                .orElseThrow(() -> new UserNotFoundException("User not found", HttpStatus.NOT_FOUND));
     }
 
     /**
@@ -100,20 +102,30 @@ public class UserService {
     }
 
     @Loggable(message = "Update user")
-    public void updateUser(User user) {
+    public HttpStatus updateUser(User user) {
         if (user == null) {
             throw new UserNotFoundException("User not found", HttpStatus.NOT_FOUND);
         }
-        userRepository.updateUser(user.getId(), user.getFirstName(),
+        Integer countOfUpdate = userRepository.updateUser(user.getId(), user.getFirstName(),
                 user.getSecondName(), user.getAge(), user.getPassport());
+        if(countOfUpdate == 0) {
+            throw new UserNotFoundException("User not updated", HttpStatus.NOT_FOUND);
+        }
+        return HttpStatus.OK;
     }
 
     @Loggable(message = "User data update")
-    public void updateUserById(Long id, Map<String, Object> dataUser) {
+    public HttpStatus updateUserById(Long id, Map<String, Object> dataUser) {
         User user = userRepository.getUserById(id);
+        if(user == null) {
+            throw new UserNotFoundException("User not found", HttpStatus.NOT_FOUND);
+        }
         user = validateUserMap(user, dataUser);
-        userRepository.updateUserById(user.getId(), user.getFirstName(),
+        Integer countOfUpdate = userRepository.updateUserById(user.getId(), user.getFirstName(),
                 user.getSecondName(), user.getAge(), user.getPassport());
+        if(countOfUpdate == 0) {
+            throw new UserNotFoundException("User not updated", HttpStatus.NOT_FOUND);
+        }
+        return HttpStatus.OK;
     }
-
 }

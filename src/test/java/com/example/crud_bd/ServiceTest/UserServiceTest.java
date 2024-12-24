@@ -2,9 +2,11 @@ package com.example.crud_bd.ServiceTest;
 
 import com.example.crud_bd.Entity.User;
 import com.example.crud_bd.Exceptions.UserNotFoundException;
+import com.example.crud_bd.Kafka.KafkaProducerService;
 import com.example.crud_bd.Repository.UserRepository;
 import com.example.crud_bd.Service.UserService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -33,15 +37,23 @@ public class UserServiceTest {
     private UserRepository userRepository;
     @InjectMocks
     private UserService userService;
+    @Mock
+    KafkaProducerService kafkaProducerService;
 
     private User user;
     private List<User> users;
+    private Map<String,Object> usersMap;
 
     @BeforeEach
     void setUp() {
         user = getUser();
         users = new ArrayList<>();
+        usersMap = new HashMap<>();
         users.add(user);
+        usersMap.put("firstName",user.getFirstName());
+        usersMap.put("secondName",user.getSecondName());
+        usersMap.put("age",user.getAge());
+        usersMap.put("passport",user.getPassport());
     }
 
     @Test
@@ -148,13 +160,100 @@ public class UserServiceTest {
     @Test
     public void testDeleteUserByPassport_shouldDeleteUserByPassport() {
         when(userRepository.deleteUserByPassport("4321-543552")).thenReturn(1);
+
         assertEquals(HttpStatus.OK, userService.deleteUserByPassport("4321-543552"));
     }
 
     @Test
-    public void testDeleteUserByPassport_shouldThrowWhenUserNotFound() {
-
+    public void testDeleteUserByPassport_shouldThrowWhenPassportIsNull() {
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.deleteUserByPassport(null));
+        assertEquals("Passport cannot be null", exception.getMessage());
     }
+
+    @Test
+    public void testDeleteUserByPassport_shouldThrowWhenUserNotFound() {
+        when(userRepository.deleteUserByPassport("4321-543552")).thenReturn(0);
+
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class,
+                () -> userService.deleteUserByPassport("4321-543552"));
+
+        assertEquals(USERNOTFOUND, exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    }
+
+    @Test
+    public void testUpdateFullUser_shouldUpdateUser() {
+        when(userRepository.updateUser(user.getId(), user.getFirstName(),
+                user.getSecondName(), user.getAge(), user.getPassport())).thenReturn(1);
+
+        assertEquals(HttpStatus.OK,userService.updateUser(user));
+    }
+
+    @Test
+    public void testUpdateFullUser_shouldThrowWhenUserIsNull() {
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class,
+                () -> userService.updateUser(null));
+
+        assertEquals("User not found", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    }
+
+    @Test
+    public void testUpdateFullUser_shouldThrowWhenUserNotUpdated() {
+        when(userRepository.updateUser(1L, user.getFirstName(),
+                user.getSecondName(), user.getAge(), user.getPassport())).thenReturn(0);
+
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class,
+                () -> userService.updateUser(user));
+
+        assertEquals("User not updated", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    }
+
+    @Test
+    public void testUpdateUserById_shouldUpdateUser() {
+        when(userRepository.getUserById(1L)).thenReturn(user);
+        when(userRepository.updateUserById(1L,
+                user.getFirstName(),user.getSecondName(),
+                user.getAge(),user.getPassport()))
+                .thenReturn(1);
+
+        assertEquals(user,userService.getUserById(1L));
+        assertEquals(HttpStatus.OK,userService.updateUserById(1L,usersMap));
+    }
+
+
+    @Test
+    public void testUpdateUserById_shouldThrowWhenUserNotFound() {
+        when(userRepository.getUserById(1L)).thenReturn(null);
+
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class,
+                () -> userService.getUserById(1L));
+
+        assertEquals(USERNOTFOUND, exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    }
+
+    @Test
+    public void testUpdateUserById_shouldThrowWhenUserNotUpdated(){
+        when(userRepository.getUserById(1L)).thenReturn(user);
+        when(userRepository.updateUserById(1L,user.getFirstName()
+                ,user.getSecondName(),user.getAge(),user.getPassport())).thenReturn(0);
+
+        UserNotFoundException userNotFoundException = assertThrows(UserNotFoundException.class,
+                () -> userService.updateUserById(1L,usersMap));
+
+        assertEquals(user,userService.getUserById(1L));
+        assertEquals("User not updated", userNotFoundException.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, userNotFoundException.getStatus());
+    }
+
+
+
+
+
+
+
 
     public User getUser() {
         return User.builder()
