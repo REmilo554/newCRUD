@@ -15,8 +15,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("select u from User u where u.passport = ?1")
     User getUserByPassport(String passport);
 
-    @Query("SELECT u FROM User u WHERE u.id = ?1")
-    User getUserById(Long id);
+    //@Query("SELECT u FROM User u WHERE u.id = ?1")
+    User findUserById(Long id);
 
     List<User> findAll();
 
@@ -27,13 +27,18 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Modifying
     @Transactional
-    @Query("delete from User u where u.id=?1")
+    //@Query("delete from User u where u.id=?1")
     Integer deleteUserById(Long id);
 
+
+    /**
+     *если убрать query,то генерируется два запроса,на селект по паспорту и делит по айди
+     */
     @Modifying
     @Transactional
     @Query("delete from User u where u.passport=?1")
     Integer deleteUserByPassport(String passport);
+
 
     @Query("update User u set u.firstName=?2,u.secondName=?3,u.age=?4,u.passport=?5 where u.id=?1")
     @Modifying

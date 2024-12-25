@@ -58,7 +58,7 @@ public class UserServiceTest {
 
     @Test
     public void testGetUserById_shouldReturnUserWhenValidId() {
-        when(userRepository.getUserById(1L)).thenReturn(user);
+        when(userRepository.findUserById(1L)).thenReturn(user);
         User result = userService.getUserById(1L);
         assertEquals(20, result.getAge());
     }
@@ -71,7 +71,7 @@ public class UserServiceTest {
 
     @Test
     public void testGetUserById_shouldReturnThrowWhenUserNull() {
-        when(userRepository.getUserById(1L)).thenReturn(null);
+        when(userRepository.findUserById(1L)).thenReturn(null);
 
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.getUserById(1L));
         assertEquals(USERNOTFOUND, exception.getMessage());
@@ -212,7 +212,7 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateUserById_shouldUpdateUser() {
-        when(userRepository.getUserById(1L)).thenReturn(user);
+        when(userRepository.findUserById(1L)).thenReturn(user);
         when(userRepository.updateUserById(1L,
                 user.getFirstName(),user.getSecondName(),
                 user.getAge(),user.getPassport()))
@@ -225,7 +225,7 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateUserById_shouldThrowWhenUserNotFound() {
-        when(userRepository.getUserById(1L)).thenReturn(null);
+        when(userRepository.findUserById(1L)).thenReturn(null);
 
         UserNotFoundException exception = assertThrows(UserNotFoundException.class,
                 () -> userService.getUserById(1L));
@@ -236,7 +236,7 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateUserById_shouldThrowWhenUserNotUpdated(){
-        when(userRepository.getUserById(1L)).thenReturn(user);
+        when(userRepository.findUserById(1L)).thenReturn(user);
         when(userRepository.updateUserById(1L,user.getFirstName()
                 ,user.getSecondName(),user.getAge(),user.getPassport())).thenReturn(0);
 

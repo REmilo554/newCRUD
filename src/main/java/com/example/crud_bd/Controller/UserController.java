@@ -4,6 +4,7 @@ import com.example.crud_bd.DTO.PassportDTO;
 import com.example.crud_bd.Entity.User;
 import com.example.crud_bd.Exceptions.UserNotFoundException;
 import com.example.crud_bd.Service.UserService;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

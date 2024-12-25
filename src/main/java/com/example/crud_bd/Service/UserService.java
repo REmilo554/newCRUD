@@ -37,7 +37,7 @@ public class UserService {
         if (id == null) {
             throw new UserNotFoundException("Id cannot be empty", HttpStatus.BAD_REQUEST);
         }
-        Optional<User> userOptional = Optional.ofNullable(userRepository.getUserById(id));
+        Optional<User> userOptional = Optional.ofNullable(userRepository.findUserById(id));
         userOptional
                 .ifPresent(user -> kafkaProducerService.sendMessage("User found", user));
         return userOptional
@@ -116,7 +116,7 @@ public class UserService {
 
     @Loggable(message = "User data update")
     public HttpStatus updateUserById(Long id, Map<String, Object> dataUser) {
-        User user = userRepository.getUserById(id);
+        User user = userRepository.findUserById(id);
         if(user == null) {
             throw new UserNotFoundException("User not found", HttpStatus.NOT_FOUND);
         }
