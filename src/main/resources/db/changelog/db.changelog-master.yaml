@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/create-users-table.yaml
+  - include:
+      file: db/changelog/changeset/update-passport-column.yaml
+  - include:
+      file: db/changelog/changeset/change-passport-column-type.yaml
+  - include:
+      file: db/changelog/changeset/change-firstName-and-secondName-columns-type.yaml

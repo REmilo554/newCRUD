@@ -133,3 +133,4 @@ ALTER TABLE users
 ALTER TABLE users
     ALTER COLUMN second_name TYPE VARCHAR(255);
 
+DROP TABLE users

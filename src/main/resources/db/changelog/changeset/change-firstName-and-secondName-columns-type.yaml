@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: change-firstName-column-type
+      author: i'am
+      changes:
+        - modifyDataType:
+            tableName: users
+            columnName: first_name
+            newDataType: varchar(255)
+        - modifyDataType:
+            tableName: users
+            columnName: second_name
+            newDataType: varchar(255)

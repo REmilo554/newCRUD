@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,7 @@ public class UserService {
      * т.к бд либо вернет пользователя
      * либо вернет null
      */
+    @Transactional(readOnly = true,isolation = Isolation.READ_COMMITTED)
     public User getUserById(Long id) {
         if (id == null) {
             throw new UserNotFoundException("Id cannot be empty", HttpStatus.BAD_REQUEST);
@@ -49,6 +52,7 @@ public class UserService {
      * т.к. в любом случае возвращается лист
      * либо нормальный, либо empty
      */
+    @Transactional(readOnly = true,isolation = Isolation.READ_COMMITTED)
     public List<User> getAllUsers() {
         List<User> usersList = userRepository.findAll();
         if (usersList.isEmpty()) {
@@ -57,6 +61,7 @@ public class UserService {
         return usersList;
     }
 
+    @Transactional(readOnly = true,isolation = Isolation.READ_COMMITTED)
     public List<User> getAllAdultUsers() {
         List<User> usersList = userRepository.findAllAdultUsers();
         if (usersList.isEmpty()) {
@@ -68,6 +73,7 @@ public class UserService {
     /**
      * обернул в ofNullable т.к вылетает NPE если из репозитория возвращается null
      */
+    @Transactional
     @Loggable(message = "Create user")
     public User createUser(User user) {
         if (user == null) {
@@ -77,6 +83,7 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found", HttpStatus.BAD_REQUEST));
     }
 
+    @Transactional
     @Loggable(message = "Deleting user")
     public HttpStatus deleteUserById(Long id) {
         if (id == null) {
@@ -89,6 +96,7 @@ public class UserService {
         return HttpStatus.OK;
     }
 
+    @Transactional
     @Loggable(message = "Deleting user")
     public HttpStatus deleteUserByPassport(String passport) {
         if (passport == null) {
@@ -101,6 +109,7 @@ public class UserService {
         return HttpStatus.OK;
     }
 
+    @Transactional
     @Loggable(message = "Update user")
     public HttpStatus updateUser(User user) {
         if (user == null) {
@@ -114,6 +123,7 @@ public class UserService {
         return HttpStatus.OK;
     }
 
+    @Transactional
     @Loggable(message = "User data update")
     public HttpStatus updateUserById(Long id, Map<String, Object> dataUser) {
         User user = userRepository.findUserById(id);

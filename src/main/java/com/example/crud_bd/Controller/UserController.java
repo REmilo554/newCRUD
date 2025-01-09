@@ -36,13 +36,6 @@ public class UserController {
 
     private final UserService userService;
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<?> handleUserNotFoundException(UserNotFoundException ex) {
-        return ResponseEntity.status(ex.getStatus())
-                .contentType(MediaType.TEXT_PLAIN)
-                .body(ex.getMessage());
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@Validated @PathVariable Long id) {
         return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);

@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: change-passport-column-type
+      author: i'am
+      changes:
+        - modifyDataType:
+            tableName: users
+            columnName: passport
+            newDataType: varchar(11)
