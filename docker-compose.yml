@@ -4,8 +4,17 @@ volumes:
   db:
   zoo:
   broker:
+  redis_data:
 
 services:
+  redis:
+    image: redis:latest
+    container_name: my-redis-container
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
   pg_db:
     image: postgres:16.2
     container_name: PRODUCT-db

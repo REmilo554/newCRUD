@@ -8,6 +8,7 @@ import com.example.crud_bd.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -35,8 +36,9 @@ public class UserService {
      * т.к бд либо вернет пользователя
      * либо вернет null
      */
-    @Transactional(readOnly = true,isolation = Isolation.READ_COMMITTED)
-    public User getUserById(Long id) {
+    @Cacheable(value = "myCache")
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public User findUserById(Long id) {
         if (id == null) {
             throw new UserNotFoundException("Id cannot be empty", HttpStatus.BAD_REQUEST);
         }
@@ -52,8 +54,8 @@ public class UserService {
      * т.к. в любом случае возвращается лист
      * либо нормальный, либо empty
      */
-    @Transactional(readOnly = true,isolation = Isolation.READ_COMMITTED)
-    public List<User> getAllUsers() {
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public List<User> findAll() {
         List<User> usersList = userRepository.findAll();
         if (usersList.isEmpty()) {
             throw new UserNotFoundException("Users not found", HttpStatus.NOT_FOUND);
@@ -61,8 +63,9 @@ public class UserService {
         return usersList;
     }
 
-    @Transactional(readOnly = true,isolation = Isolation.READ_COMMITTED)
-    public List<User> getAllAdultUsers() {
+
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public List<User> findAllAdultUsers() {
         List<User> usersList = userRepository.findAllAdultUsers();
         if (usersList.isEmpty()) {
             throw new UserNotFoundException("Users not found", HttpStatus.NOT_FOUND);
@@ -73,9 +76,10 @@ public class UserService {
     /**
      * обернул в ofNullable т.к вылетает NPE если из репозитория возвращается null
      */
+    @Cacheable(value = "myCache",key = "#user.firstName + #user.secondName")
     @Transactional
     @Loggable(message = "Create user")
-    public User createUser(User user) {
+    public User save(User user) {
         if (user == null) {
             throw new UserNotFoundException("User cannot be empty", HttpStatus.BAD_REQUEST);
         }
@@ -85,57 +89,56 @@ public class UserService {
 
     @Transactional
     @Loggable(message = "Deleting user")
-    public HttpStatus deleteUserById(Long id) {
+    public User deleteUserById(Long id) {
         if (id == null) {
             throw new UserNotFoundException("Id cannot be empty", HttpStatus.NOT_FOUND);
         }
-        Integer countOfDelete = userRepository.deleteUserById(id);
-        if (countOfDelete == 0) {
+        User user = userRepository.deleteUserById(id);
+        if (user == null) {
             throw new UserNotFoundException("User not found", HttpStatus.NOT_FOUND);
         }
-        return HttpStatus.OK;
+        return user;
     }
 
     @Transactional
     @Loggable(message = "Deleting user")
-    public HttpStatus deleteUserByPassport(String passport) {
+    public User deleteUserByPassport(String passport) {
         if (passport == null) {
             throw new UserNotFoundException("Passport cannot be null", HttpStatus.NOT_FOUND);
         }
-        Integer countOfDelete = userRepository.deleteUserByPassport(passport);
-        if (countOfDelete == 0) {
+        User user = userRepository.deleteUserByPassport(passport);
+        if (user == null) {
             throw new UserNotFoundException("User not found", HttpStatus.NOT_FOUND);
         }
-        return HttpStatus.OK;
+        return user;
     }
 
     @Transactional
     @Loggable(message = "Update user")
-    public HttpStatus updateUser(User user) {
+    public User updateUser(User user) {
         if (user == null) {
             throw new UserNotFoundException("User not found", HttpStatus.NOT_FOUND);
         }
-        Integer countOfUpdate = userRepository.updateUser(user.getId(), user.getFirstName(),
-                user.getSecondName(), user.getAge(), user.getPassport());
-        if(countOfUpdate == 0) {
-            throw new UserNotFoundException("User not updated", HttpStatus.NOT_FOUND);
-        }
-        return HttpStatus.OK;
+        return Optional.ofNullable(userRepository.updateUser(user.getId(),
+                        user.getFirstName(), user.getSecondName(), user.getAge(),
+                        user.getPassport()))
+                .orElseThrow(() -> new UserNotFoundException("User not updated",
+                        HttpStatus.NOT_FOUND));
     }
 
     @Transactional
     @Loggable(message = "User data update")
-    public HttpStatus updateUserById(Long id, Map<String, Object> dataUser) {
+    public User updateUserById(Long id, Map<String, Object> dataUser) {
         User user = userRepository.findUserById(id);
-        if(user == null) {
+        if (user == null) {
             throw new UserNotFoundException("User not found", HttpStatus.NOT_FOUND);
         }
         user = validateUserMap(user, dataUser);
-        Integer countOfUpdate = userRepository.updateUserById(user.getId(), user.getFirstName(),
+        User returnedUser = userRepository.updateUserById(user.getId(), user.getFirstName(),
                 user.getSecondName(), user.getAge(), user.getPassport());
-        if(countOfUpdate == 0) {
+        if (returnedUser == null) {
             throw new UserNotFoundException("User not updated", HttpStatus.NOT_FOUND);
         }
-        return HttpStatus.OK;
+        return returnedUser;
     }
 }

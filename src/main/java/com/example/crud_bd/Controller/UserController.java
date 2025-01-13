@@ -2,17 +2,13 @@ package com.example.crud_bd.Controller;
 
 import com.example.crud_bd.DTO.PassportDTO;
 import com.example.crud_bd.Entity.User;
-import com.example.crud_bd.Exceptions.UserNotFoundException;
 import com.example.crud_bd.Service.UserService;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,42 +33,42 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@Validated @PathVariable Long id) {
-        return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
+    public ResponseEntity<User> findUserById(@Validated @PathVariable Long id) {
+        return new ResponseEntity<>(userService.findUserById(id), HttpStatus.OK);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<User>> getAllUsers() {
-        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+    public ResponseEntity<List<User>> findAllUsers() {
+        return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
     }
 
     @GetMapping("/allAdult")
-    public ResponseEntity<List<User>> getAllAdultUsers() {
-        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+    public ResponseEntity<List<User>> findAllAdultUsers() {
+        return new ResponseEntity<>(userService.findAllAdultUsers(), HttpStatus.OK);
     }
 
     @PostMapping("/new")
-    public ResponseEntity<User> createUser(@Validated @RequestBody User user) {
+    public ResponseEntity<User> save(@Validated @RequestBody User user) {
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
     }
 
     //http://localhost:8080/users/
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<User> deleteUserById(@PathVariable Long id) {
         if (id == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(userService.deleteUserById(id));
+        return new ResponseEntity<>(userService.deleteUserById(id),HttpStatus.OK);
     }
 
     //http://localhost:8080/users/delete
     @DeleteMapping("/delete")
-    public ResponseEntity<Void> deleteUserByPassport(@RequestHeader("passport") String passport, @Validated PassportDTO passportDTO) {
+    public ResponseEntity<User> deleteUserByPassport(@RequestHeader("passport") String passport, @Validated PassportDTO passportDTO) {
         passportDTO.setPassport(passport);
-        return new ResponseEntity<>(userService.deleteUserByPassport(passport));
+        return new ResponseEntity<>(userService.deleteUserByPassport(passport),HttpStatus.OK);
     }
 
     /**
@@ -87,22 +83,20 @@ public class UserController {
      * }
      */
     @PutMapping("/put")
-    public ResponseEntity<Void> updateUser(@Validated @RequestBody User user) {
+    public ResponseEntity<User> updateUser(@Validated @RequestBody User user) {
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        userService.updateUser(user);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(userService.updateUser(user),HttpStatus.OK);
     }
 
     //  http://localhost:8080/users/patch/3
     @PatchMapping("/patch/{id}")
-    public ResponseEntity<Void> updateUser(@PathVariable Long id, @RequestBody Map<String, Object> dataUser) {
+    public ResponseEntity<User> updateUserById(@PathVariable Long id, @RequestBody Map<String, Object> dataUser) {
         if (dataUser == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        userService.updateUserById(id, dataUser);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(userService.updateUserById(id, dataUser),HttpStatus.OK);
     }
 
 }

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class KafkaProducerService {
-    private final String TOPIC = "NewTopic";
+    private final String TOPIC = "newTopic";
     private final KafkaTemplate<String, User> template;
 
     @Autowired

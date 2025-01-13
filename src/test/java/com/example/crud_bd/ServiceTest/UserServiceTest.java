@@ -6,7 +6,6 @@ import com.example.crud_bd.Kafka.KafkaProducerService;
 import com.example.crud_bd.Repository.UserRepository;
 import com.example.crud_bd.Service.UserService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,89 +56,86 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testGetUserById_shouldReturnUserWhenValidId() {
+    public void testFindUserById_shouldReturnUserWhenValidId() {
         when(userRepository.findUserById(1L)).thenReturn(user);
-        User result = userService.getUserById(1L);
-        assertEquals(20, result.getAge());
+        User result = userService.findUserById(1L);
+        assertEquals(14, result.getAge());
     }
 
     @Test
-    public void testGetUserById_shouldReturnThrowWhenInvalidId() {
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.getUserById(null));
+    public void testFindUserById_shouldReturnThrowWhenInvalidId() {
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.findUserById(null));
         assertEquals(IDCANNOTBEEMPTY, exception.getMessage());
     }
 
     @Test
-    public void testGetUserById_shouldReturnThrowWhenUserNull() {
+    public void testFindUserById_shouldReturnThrowWhenUserNull() {
         when(userRepository.findUserById(1L)).thenReturn(null);
 
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.getUserById(1L));
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.findUserById(1L));
         assertEquals(USERNOTFOUND, exception.getMessage());
     }
 
     @Test
-    public void testGetAllUsers_shouldReturnUsersList() {
+    public void testFindAllUsers_shouldReturnUsersList() {
         when(userRepository.findAll()).thenReturn(users);
-        List<User> result = userService.getAllUsers();
+        List<User> result = userService.findAll();
 
         assertEquals(1, result.size());
         assertEquals(user, result.get(0));
     }
 
     @Test
-    public void testGetAllUsers_shouldReturnThrowWhenListEmpty() {
+    public void testFindAllUsers_shouldReturnThrowWhenListEmpty() {
         when(userRepository.findAll()).thenReturn(new ArrayList<>());
 
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.getAllUsers());
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.findAll());
         assertEquals(USERSNOTFOUND, exception.getMessage());
     }
 
     @Test
-    public void testGetAllAdultUsers_shouldReturnNoAdultUsersList() {
-        User adultUser = users.get(0);
-        adultUser.setAge(14);
-        users.add(adultUser);
-        users.remove(0);
+    public void testFindAllAdultUsers_shouldReturnNoAdultUsersList() {
+        when(userRepository.findAllAdultUsers()).thenReturn(users);
 
-        when(userRepository.findAll()).thenReturn(users);
-
-        assertFalse(userService.getAllUsers().get(0).getAge() >= 18);
+        assertTrue(userService.findAllAdultUsers().get(0).getAge() < 18);
     }
 
     @Test
-    public void testGetAllAdultUsers_shouldReturnAdultUsersList() {
-        when(userRepository.findAll()).thenReturn(users);
+    public void testFindAllAdultUsers_shouldReturnAdultUsersList() {
+        when(userRepository.findAllAdultUsers()).thenReturn(users);
 
-        assertTrue(userService.getAllUsers().get(0).getAge() >= 18);
+        assertFalse(userService.findAllAdultUsers().get(0).getAge() >= 18);
     }
 
     @Test
-    public void testCreateUser_shouldCreateUser() {
+    public void testSaveUser_shouldSaveUser() {
         when(userRepository.save(user)).thenReturn(user);
-        User result = userService.createUser(user);
+        User result = userService.save(user);
 
         assertEquals(user, result);
     }
 
     @Test
-    public void testCreateUser_shouldThrowWhenUserNull() {
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.createUser(null));
+    public void testSaveUser_shouldThrowWhenUserNull() {
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.save(null));
         assertEquals(USERCANNOTBEEMPTY, exception.getMessage());
     }
 
     @Test
-    public void testCreateUser_shouldThrowWhenUserAlreadyExists() {
+    public void testSaveUser_shouldThrowWhenUserAlreadyExists() {
         when(userRepository.save(user)).thenReturn(null);
 
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.createUser(user));
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.save(user));
         assertEquals(USERNOTFOUND, exception.getMessage());
     }
+
 
     @DisplayName("проверяет удаление")
     @Test
     public void testDeleteUserById_shouldDeleteUser() {
-        when(userRepository.deleteUserById(1L)).thenReturn(1);
-        assertEquals(HttpStatus.OK, userService.deleteUserById(1L));
+        when(userRepository.deleteUserById(1L)).thenReturn(user);
+        User result = userService.deleteUserById(1L);
+        assertEquals(user, result);
     }
 
     @Test
@@ -150,7 +146,7 @@ public class UserServiceTest {
 
     @Test
     public void testDeleteUserById_ShouldThrowWhenUserNotFound() {
-        when(userRepository.deleteUserById(1L)).thenReturn(0);
+        when(userRepository.deleteUserById(1L)).thenReturn(null);
 
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.deleteUserById(1L));
         assertEquals(USERNOTFOUND, exception.getMessage());
@@ -159,9 +155,9 @@ public class UserServiceTest {
 
     @Test
     public void testDeleteUserByPassport_shouldDeleteUserByPassport() {
-        when(userRepository.deleteUserByPassport("4321-543552")).thenReturn(1);
+        when(userRepository.deleteUserByPassport("4321-543552")).thenReturn(user);
 
-        assertEquals(HttpStatus.OK, userService.deleteUserByPassport("4321-543552"));
+        assertEquals(user, userService.deleteUserByPassport("4321-543552"));
     }
 
     @Test
@@ -172,7 +168,7 @@ public class UserServiceTest {
 
     @Test
     public void testDeleteUserByPassport_shouldThrowWhenUserNotFound() {
-        when(userRepository.deleteUserByPassport("4321-543552")).thenReturn(0);
+        when(userRepository.deleteUserByPassport("4321-543552")).thenReturn(null);
 
         UserNotFoundException exception = assertThrows(UserNotFoundException.class,
                 () -> userService.deleteUserByPassport("4321-543552"));
@@ -184,9 +180,10 @@ public class UserServiceTest {
     @Test
     public void testUpdateFullUser_shouldUpdateUser() {
         when(userRepository.updateUser(user.getId(), user.getFirstName(),
-                user.getSecondName(), user.getAge(), user.getPassport())).thenReturn(1);
+                user.getSecondName(), user.getAge(), user.getPassport())).thenReturn(user);
+        User result = userService.updateUser(user);
 
-        assertEquals(HttpStatus.OK,userService.updateUser(user));
+        assertEquals(user, result);
     }
 
     @Test
@@ -200,8 +197,9 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateFullUser_shouldThrowWhenUserNotUpdated() {
+
         when(userRepository.updateUser(1L, user.getFirstName(),
-                user.getSecondName(), user.getAge(), user.getPassport())).thenReturn(0);
+                user.getSecondName(), user.getAge(), user.getPassport())).thenReturn(null);
 
         UserNotFoundException exception = assertThrows(UserNotFoundException.class,
                 () -> userService.updateUser(user));
@@ -216,10 +214,10 @@ public class UserServiceTest {
         when(userRepository.updateUserById(1L,
                 user.getFirstName(),user.getSecondName(),
                 user.getAge(),user.getPassport()))
-                .thenReturn(1);
+                .thenReturn(user);
 
-        assertEquals(user,userService.getUserById(1L));
-        assertEquals(HttpStatus.OK,userService.updateUserById(1L,usersMap));
+        assertEquals(user,userService.findUserById(1L));
+        assertEquals(user,userService.updateUserById(1L,usersMap));
     }
 
 
@@ -228,7 +226,7 @@ public class UserServiceTest {
         when(userRepository.findUserById(1L)).thenReturn(null);
 
         UserNotFoundException exception = assertThrows(UserNotFoundException.class,
-                () -> userService.getUserById(1L));
+                () -> userService.findUserById(1L));
 
         assertEquals(USERNOTFOUND, exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
@@ -238,12 +236,12 @@ public class UserServiceTest {
     public void testUpdateUserById_shouldThrowWhenUserNotUpdated(){
         when(userRepository.findUserById(1L)).thenReturn(user);
         when(userRepository.updateUserById(1L,user.getFirstName()
-                ,user.getSecondName(),user.getAge(),user.getPassport())).thenReturn(0);
+                ,user.getSecondName(),user.getAge(),user.getPassport())).thenReturn(null);
 
         UserNotFoundException userNotFoundException = assertThrows(UserNotFoundException.class,
                 () -> userService.updateUserById(1L,usersMap));
 
-        assertEquals(user,userService.getUserById(1L));
+        assertEquals(user,userService.findUserById(1L));
         assertEquals("User not updated", userNotFoundException.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, userNotFoundException.getStatus());
     }
@@ -260,7 +258,7 @@ public class UserServiceTest {
                 .id(1L)
                 .firstName("bob")
                 .secondName("Lol")
-                .age(20)
+                .age(14)
                 .passport("4321-543552")
                 .build();
     }
