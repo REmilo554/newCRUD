@@ -1,0 +1,18 @@
+INSERT INTO orders (user_id,
+                    order_date,
+                    order_status,
+                    order_amount,
+                    product_id,
+                    product_quantity,
+                    product_price,
+                    total_price_on_product,
+                    total_price_on_order)
+VALUES (1,
+        '2024-01-26T12:30:00',
+        'PENDING',
+        250.00,
+        1,
+        2,
+        450.00,
+        225.00,
+        700.00);

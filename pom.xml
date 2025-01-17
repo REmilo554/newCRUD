@@ -9,10 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
-    <artifactId>CRUD_BD</artifactId>
+    <artifactId>parent-pom</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>CRUD_BD</name>
-    <description>CRUD_BD</description>
+    <packaging>pom</packaging>
     <url/>
     <licenses>
         <license/>
@@ -29,10 +28,25 @@
     <properties>
         <java.version>17</java.version>
     </properties>
+
+    <modules>
+        <module>UserService</module>
+        <module>ProductService</module>
+        <module>OrderService</module>
+    </modules>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-jms -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-docker-compose</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -76,7 +90,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.36</version>
-            <scope>compileOnly</scope>
         </dependency>
 
         <dependency>

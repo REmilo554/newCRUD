@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/createOrderTable.sql
+  - include:
+      file: db/changelog/changeset/foreignKeySetup.sql
+  - include:
+      file: db/changelog/changeset/firstOrder.sql
